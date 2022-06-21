@@ -1,14 +1,11 @@
 <?php
-     $server = "localhost";
-     $user = "root";
-     $pass = "";
-     $DB = "floricultura";
+    $server = "localhost";
+    $user = "root";
+    $pass = "";
+    $DB = "floricultura";
      
-     $mysqli = new mysqli($server, $user, $pass, $DB);
-    
-
-    $sql = "SELECT * FROM tb_produto ORDER BY pro_id ASC";
-
+    $mysqli = new mysqli($server, $user, $pass, $DB);
+    $sql = "SELECT pro_id, pro_preco, pro_nome, pro_quantidade, cat_tipo FROM tb_produto INNER JOIN tb_categoria_has_pro ON tb_categoria_has_pro_cat_id = cat_id;";
     $result = $mysqli->query($sql);
 ?>
 <!doctype html>
@@ -24,6 +21,34 @@
     <title>Admin</title>
 
     <link href="../vendor/bootstrap/bootstrap.css" rel="stylesheet">
+
+    <script>
+        function preco(i){
+
+         var v = i.value;
+   
+        if(isNaN(v[v.length-1])){ // impede entrar outro caractere que não seja número
+            i.value = v.substring(0, v.length-1);
+            return;
+        }
+        
+        i.setAttribute("maxlength", "6");
+        if (v.length == 3 ) i.value += ",";
+        }
+
+        function quantidade(i){
+   
+         var v = i.value;
+   
+        if(isNaN(v[v.length-1])){ // impede entrar outro caractere que não seja número
+            i.value = v.substring(0, v.length-1);
+            return;
+        }
+        
+        i.setAttribute("maxlength", "3");
+    
+        }
+    </script>
 
     <style>
         .bd-placeholder-img {
@@ -125,7 +150,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <!--<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -143,7 +168,7 @@
                             </a>
                         </li>
                     </ul>
-            </nav>
+            </nav>-->
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -184,30 +209,32 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-floating">
-                            <input type="text" name="pro_preco" data-ls-module="charCounter" maxlength="20" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
+                            <input type="text" name="pro_preco" oninput="preco(this)" data-ls-module="charCounter" maxlength="20" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
                             <label for="floatingInputGrid">Preço</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating">
-                            <input type="text" name="pro_quantidade" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
+                            <input type="text" name="pro_quantidade" oninput="quantidade(this)" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
                             <label for="floatingInputGrid">Quantidade</label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                        <div class="form-floating">
-                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                            <option selected>Categoria</option>
-                            <option value="1" name="rosas">Rosas</option>
-                            <option value="2" name="orquideas">Orquídeas</option>
-                            <option value="3" name="margaridas">Margaridas</option>
-                            <option value="4" name="violetas">Violetas</option>
-                            <option value="5" name="crisantemos">Crisântemos</option>
-                        </select>
-                        <label for="floatingSelect">Selecione</label>
-                        </div>
                             <div class="form-floating">
-                            <input type="text" name="tb_categoria_has_pro_cat_id" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
+                            <select name="tb_categoria_has_pro_cat_id" class="form-select" id="floatingInputGrid" placeholder="name@example.com">
+                                <option disabled selected>Selecione</option>    
+                            <!--este código em php tras as categorias da tebela categoria do banco de dados-->
+                                <?php
+                                    $cat = "SELECT * FROM tb_categoria_has_pro ORDER BY cat_tipo, cat_id ASC";
+                                    $res = $mysqli->query($cat);
+
+                                    while($user_data = mysqli_fetch_assoc($res)){?>
+
+                                        <option value="<?php echo $user_data['cat_id']?>"><?php echo $user_data['cat_tipo']?></option>
+                                  
+                                  <?php }
+                                ?>
+                            </select>
                             <label for="floatingInputGrid">Categoria</label>
                             </div>
                         </div>
@@ -238,7 +265,10 @@
                                 echo "<td>".$user_data['pro_preco']."</td>";
                                 echo "<td>".$user_data['pro_nome']."</td>";
                                 echo "<td>".$user_data['pro_quantidade']."</td>";
-                                echo "<td>".$user_data['tb_categoria_has_pro_cat_id']."</td>";
+                                echo "<td>".$user_data['cat_tipo']."</td>";
+                                ?>
+                               
+                                <?php
                                 echo "<td>
                                     <a class='btn btn-sm btn-primary' href='adminEditar.php?id=$user_data[pro_id]'>
                                         <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-fill' viewBox='0 0 16 16'>

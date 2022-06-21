@@ -29,7 +29,7 @@
                 <img src="../assets/img/login/login-2.png" alt="" width="101.5%">
             </div>
             <div class="col-sm-5 d-flex align-items-center justify-content-center bg-light">
-                <form method="POST" action="../model/logar.php">
+                <form method="POST" action="../model/logarAdmin.php">
                     <p class="h3 mb-3">Entrar</p>
                     <div class="row mb-2">
                     <label for="exampleDataList" class="form-label px-1 f-size">Email</label>
