@@ -1,4 +1,4 @@
-<?php
+    <?php
         include('../controller/conexaoPro.php');
 
         if(!empty($_GET['id'])){
@@ -34,34 +34,6 @@
     <title>Admin</title>
 
     <link href="../vendor/bootstrap/bootstrap.css" rel="stylesheet">
-
-    <script>
-        function preco(i){
-
-         var v = i.value;
-   
-        if(isNaN(v[v.length-1])){ // impede entrar outro caractere que não seja número
-            i.value = v.substring(0, v.length-1);
-            return;
-        }
-        
-        i.setAttribute("maxlength", "6");
-        if (v.length == 3 ) i.value += ",";
-        }
-
-        function quantidade(i){
-   
-         var v = i.value;
-   
-        if(isNaN(v[v.length-1])){ // impede entrar outro caractere que não seja número
-            i.value = v.substring(0, v.length-1);
-            return;
-        }
-        
-        i.setAttribute("maxlength", "3");
-    
-        }
-    </script>
 
     <style>
         .bd-placeholder-img {
@@ -222,42 +194,68 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-floating">
-                            <input type="text" name="pro_preco" value="<?php echo $pro_preco ?>" oninput="preco(this)" data-ls-module="charCounter" maxlength="20" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
+                            <input type="text" name="pro_preco" value="<?php echo $pro_preco ?>" data-ls-module="charCounter" maxlength="20" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
                             <label for="floatingInputGrid">Preço</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating">
-                            <input type="text" name="pro_quantidade" value="<?php echo $pro_quantidade ?>" oninput="quantidade(this)"class="form-control" id="floatingInputGrid" placeholder="name@example.com">
+                            <input type="text" name="pro_quantidade" value="<?php echo $pro_quantidade ?>" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
                             <label for="floatingInputGrid">Quantidade</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-floating">
-                            <select name="tb_categoria_has_pro_cat_id" class="form-select" id="floatingInputGrid" placeholder="name@example.com">
-                                <option disabled selected>Selecione</option>    
-                                <!--este código em php tras as categorias da tebela categoria do banco de dados-->
-                                <?php
-                                    $cat = "SELECT * FROM tb_categoria_has_pro ORDER BY cat_tipo, cat_id ASC";
-                                    $res = $mysqli->query($cat);
-
-                                    while($user_data = mysqli_fetch_assoc($res)){?>
-                                        <option value="<?php echo $user_data['cat_id']?>"><?php echo $user_data['cat_tipo']?></option>
-                                  <?php }
-                                ?>
-                            </select>
-                             <label for="floatingInputGrid">Categoria</label>
+                            <input type="text" name="tb_categoria_has_pro_cat_id" value="<?php echo $tb_categoria_has_pro_cat_id ?>" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
+                            <label for="floatingInputGrid">Categoria</label>
                             </div>
                         </div>
                         <div class="col-md-1">
-                        <input type="hidden" name="pro_id" value="<?php echo $id ?>">
                             <button class="btn btn-pink p-3 b-shadow"  name="update">Salvar</button>
                         </div>
                     </div>
                     </div>
                     </form>
 
-                
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Preço</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Quantidade</th>
+                                <th scope="col">Categoria</th>
+                                <th scope="col">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                            while($user_data = mysqli_fetch_assoc($result)){
+                                echo "<tr>";
+                                echo "<td>".$user_data['pro_id']."</td>";
+                                echo "<td>".$user_data['pro_preco']."</td>";
+                                echo "<td>".$user_data['pro_nome']."</td>";
+                                echo "<td>".$user_data['pro_quantidade']."</td>";
+                                echo "<td>".$user_data['tb_categoria_has_pro_cat_id']."</td>";
+                                echo "<td>
+                                    <a class='btn btn-sm btn-primary' href='adminEditar.php?id=$user_data[pro_id]'>
+                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-fill' viewBox='0 0 16 16'>
+                                            <path d='M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z'/>
+                                        </svg>
+                                    </a>
+                                    <a class='btn btn-sm btn-danger' href='../model/deletar.php?id=$user_data[pro_id]'>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash-fill' viewBox='0 0 16 16'>
+                                    <path d='M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z'/>
+                                </svg>
+                                    </a>
+                                </td>";
+                                echo "</tr>";
+                            }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
             </main>
         </div>
     </div>

@@ -1,4 +1,9 @@
 <?php
+    require '../model/verifica.php';
+
+    if(isset($_SESSION['iduser']) && !empty($_SESSION['iduser'])):?>
+
+<?php
     $server = "localhost";
     $user = "root";
     $pass = "";
@@ -7,6 +12,9 @@
     $mysqli = new mysqli($server, $user, $pass, $DB);
     $sql = "SELECT pro_id, pro_preco, pro_nome, pro_quantidade, cat_tipo FROM tb_produto INNER JOIN tb_categoria_has_pro ON tb_categoria_has_pro_cat_id = cat_id;";
     $result = $mysqli->query($sql);
+
+    $sqlft = "SELECT `ft_id`, `ft_path`, `ft_nome`, `tb_produto_pro_id` FROM `tb_foto_has_pro` WHERE 1;";
+    $result2 = $mysqli->query($sqlft)
 ?>
 <!doctype html>
 <html lang="en">
@@ -143,7 +151,7 @@
         <input class="form-control form-control-dark w-100 rounded-pill border bg-light" type="text" placeholder="Pesquisar" aria-label="Search">
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="#"><button class="btn btn-secondary rounded-5 b-shadow-dark">Sair</button></a>
+                <a class="nav-link px-3" href="../model/logout.php"><button class="btn btn-secondary rounded-5 b-shadow-dark">Sair</button></a>
             </div>
         </div>
     </header>
@@ -187,8 +195,7 @@
                     </div>
                 </div>
 
-                <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-
+               
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 id="proCadastro" class="h2">Produtos cadastrados</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
@@ -199,8 +206,15 @@
                     </div>
                 </div>
 
-                <form method="POST" action="../model/cadastroDB.php">
+                <form method="POST" action="../model/cadastroDB.php" enctype="multipart/form-data">
                 <div class="row g-2 mb-4">
+
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <p> <label for="">Selecione o arquivo</label>
+                                <input multiple name="arquivo[]" type="file"> </p>
+                            </div>
+                        </div>
                         <div class="col-md-3">
                             <div class="form-floating">
                             <input type="text" name="pro_nome" data-ls-module="charCounter" maxlength="40" class="form-control" id="floatingInputGrid" placeholder="name@example.com">
@@ -234,6 +248,23 @@
                                   
                                   <?php }
                                 ?>
+
+                                
+                                <?php
+                                    $ft = "SELECT `ft_id`, `ft_path`, `ft_nome`, `tb_produto_pro_id` FROM `tb_foto_has_pro` WHERE 1";
+                                    $resFt = $mysqli->query($ft);
+
+                                    while($user_data = mysqli_fetch_assoc($resFt)){?>
+
+                                        <option value="
+                                        <?php echo $user_data['ft_nome']?>
+                                        <?php echo $user_data['tb_produto_pro_id ']?>
+                                        <?php echo $user_data['ft_id']?>
+                                        <?php echo $user_data['ft_path']?>">
+                                        </option>
+                                  
+                                  <?php }
+                                ?>
                             </select>
                             <label for="floatingInputGrid">Categoria</label>
                             </div>
@@ -259,7 +290,7 @@
                         </thead>
                         <tbody>
                         <?php
-                            while($user_data = mysqli_fetch_assoc($result)){
+                            while($user_data = mysqli_fetch_assoc($result) && mysqli_fetch_assoc($result2)){
                                 echo "<tr>";
                                 echo "<td>".$user_data['pro_id']."</td>";
                                 echo "<td>".$user_data['pro_preco']."</td>";
@@ -300,3 +331,5 @@
 </body>
 
 </html>
+
+<?php else: header("Location: ../view/loginAdmin.php"); endif; ?>
